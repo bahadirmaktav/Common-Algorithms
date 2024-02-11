@@ -1,11 +1,23 @@
-cmake_minimum_required(VERSION 3.0.0)
-project(common-algorithms VERSION 0.1.0 LANGUAGES C CXX)
+# Set minimum CMAKE standart 
+cmake_minimum_required(VERSION 3.11)
 
-include(CTest)
-enable_testing()
+# Set CPP and C standarts
+set(CMAKE_CXX_STANDARD 11)
 
+# Set cmake directories for dependencies
+set(spdlog_DIR ${CMAKE_SOURCE_DIR}/deps/spdlog/cmake)
+
+# Set project settings
+project(common-algorithms VERSION 0.1.0 LANGUAGES CXX)
+
+# Load dependencies
+if(NOT TARGET spdlog)
+    # Stand-alone build
+    find_package(spdlog REQUIRED)
+endif()
+
+# Create test executable
 add_executable(common-algorithms main.cpp)
 
-set(CPACK_PROJECT_NAME ${PROJECT_NAME})
-set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
-include(CPack)
+# Integrate dependencies for test executable
+target_link_libraries(common-algorithms PRIVATE spdlog::spdlog $<$<BOOL:${MINGW}>:ws2_32>)
